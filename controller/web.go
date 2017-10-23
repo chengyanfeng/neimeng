@@ -2,12 +2,13 @@ package controller
 
 import (
 	"github.com/astaxie/beego/toolbox"
-	. "../datasource"
-	. "../def"
-	. "../util"
+	. "neimeng/datasource"
+	. "neimeng/def"
+	. "neimeng/util"
 	"sort"
 	"strings"
 	"time"
+	"fmt"
 )
 
 type WebController struct {
@@ -358,7 +359,13 @@ func (this *WebController) Task_status() {
 	this.EchoJsonMsg(task)
 }
 
-
+func(this *WebController)Media_brank(){
+	fmt.Print("1221")
+	p:=P{"backups":0}
+	list:=*D(Media).Find(p).All()
+	fmt.Print(list)
+	this.EchoJsonMsg(list)
+}
 
 
 

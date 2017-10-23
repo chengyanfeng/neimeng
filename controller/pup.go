@@ -2,11 +2,13 @@ package controller
 
 import (
 	"github.com/astaxie/beego"
-	. "../datasource"
-	. "../def"
-	. "../util"
+	. "neimeng/datasource"
+	. "neimeng/def"
+	. "neimeng/util"
 	"time"
 	"strings"
+	"fmt"
+
 )
 
 type PupController struct {
@@ -856,3 +858,105 @@ func change_old_4() {
 		}
 	}
 }
+
+
+func Mediabank(){
+	Debug("媒体资源库")
+	//优先修改备份字段
+	priority:=P{"backups":0}
+	duplicate:=P{"backups":1}
+	list:=*D(Media).Find(priority).All()
+	if len(list)>0{
+		for k,_:=range list {
+			fmt.Println(k)
+			D(Media).Upsert(priority,duplicate)
+		}
+	}
+	var url="http://zycf.northnews.cn:8443/cre/api/json/basicsearch"
+	header := P{}
+	header["Content-Type"] = "text/plain;charset=UTF-8"
+	header["Access-Control-Allow-Headers"]="Content-Type"
+	header["Access-Control-Allow-Credentials"]="true"
+	conditions:=make([]P,2)
+	conditions[0]=P{
+		"id":"type",
+		"value": "7",
+	}
+	conditions[0]["operator"]=1
+	conditions[1]=P{
+		"id": "FOLDERID",
+		"value": "PRODUCT_ROOT_FOLDERID",
+	}
+	dataparam:=P{}
+	param := P{}
+	param["conditions"]=conditions
+	param["start"]=0
+	param["limit"]=3
+	param["userId"]="a3d9511c1bb94c9ca1e1fa52d54aa1ab"
+	param["token"]="ST-53-R4FZlngYZ2eAzdofZd7J-cas"
+	param["orderBy"]="lastModify desc"
+	param["extendResultFields"]="作者,产品状态"
+	data, error := HttpPostBody(url, &header, JsonEncode(param))
+	if error != nil {
+		Debug("访问接口失败")
+	} else {
+		Debug("访问接口成功")
+		md := *JsonDecode([]byte(data))
+
+		mddata, err :=md["itemList"].([]interface{})
+		if err{
+			fmt.Print("获取成功")
+		}
+		totalCount:=md["totalCount"]
+		dataparam["totalCount"]=totalCount
+
+		for k,v :=range mddata {
+
+			 vdata:=v.(map[string]interface{})
+			dataparam["创建时间"] =vdata["created"]
+			dataparam["提交时间"] =vdata["lastModify"]
+			dataparam["名称"] =vdata["creatorName"]
+			dataparam["资源详情"] =vdata["detailUrl"]
+			dataparam["序号"]=k
+			dataparam["backups"]=0
+			auth:=vdata["extendAttributes"].([]interface{})
+			for k,authv:=range auth{
+
+				audata:=authv.(map[string]interface{})
+				if k==0{
+					dataparam["作者"]=audata["id"]
+
+
+				}else {
+					dataparam["状态"]=audata["value"]
+
+				}
+
+			}
+
+			fmt.Println("已经ok")
+			err:=D(Media).Add(dataparam)
+			if err!=nil{
+				D(Media).Remove(priority)
+				D(Media).Upsert(duplicate,priority)
+
+			}
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+		}
+
+
+	}
+

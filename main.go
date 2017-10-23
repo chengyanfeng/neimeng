@@ -4,16 +4,16 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/toolbox"
 	"os"
-	. "./controller"
-	. "./def"
-	. "./task"
-	. "./util"
+	. "neimeng/controller"
+	. "neimeng/def"
+	. "neimeng/task"
+	. "neimeng/util"
 )
 
 func main() {
 
 	MODE = Trim(os.Getenv("mode"))
-	beego.BConfig.Listen.HTTPPort = 9600                     //端口设置
+	beego.BConfig.Listen.HTTPPort = 96                     //端口设置
 	beego.BConfig.RecoverPanic = true                        //开启异常捕获
 	beego.BConfig.EnableErrorsShow = true                    //打印错误记录
 	beego.InsertFilter("/*", beego.BeforeRouter, BaseFilter) //路由过滤
@@ -28,6 +28,7 @@ func main() {
 	beego.SetLogger("file", `{"filename":"logs/run.log"}`) //定义日志文件
 	beego.BeeLogger.SetLogFuncCallDepth(4)
 	//调用以下函数处理接口数据
+
 	Change_old()
 	New_list()
 	Hot_news()
@@ -39,6 +40,7 @@ func main() {
 	Web()
 	App()
 	SelectLists()
+	Mediabank()
 	go func() { //开启协程
 		InitCache() //初始化
 		//crontab()   //开启定时任务
@@ -60,6 +62,7 @@ func crontab() {
 			Web()
 			App()
 			SelectLists()
+			Mediabank()
 		}
 		return nil
 	}))
