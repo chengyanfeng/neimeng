@@ -4,10 +4,10 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/toolbox"
 	"os"
-	. "../controller"
-	. "../def"
-	. "../task"
-	. "../util"
+	. "neimeng/controller"
+	. "neimeng/def"
+	. "neimeng/task"
+	. "neimeng/util"
 )
 
 func main() {
@@ -29,7 +29,7 @@ func main() {
 	beego.BeeLogger.SetLogFuncCallDepth(4)
 	//调用以下函数处理接口数据
 
-	Change_old()
+	/*Change_old()
 	New_list()
 	Hot_news()
 	Day30()
@@ -39,19 +39,19 @@ func main() {
 	Wx()
 	Web()
 	App()
-	SelectLists()
+	SelectLists()*/
 	Mediabank()
 	go func() { //开启协程
 		InitCache() //初始化
-		//crontab()   //开启定时任务
+		crontab()   //开启定时任务
 	}()
 	beego.Run() //启动项目
 }
 
 func crontab() {
-	toolbox.AddTask("pd", toolbox.NewTask("pd", beego.AppConfig.String("crontab"), func() error { //每10分钟运行以下函数
+	toolbox.AddTask("pd", toolbox.NewTask("pd", "* */10 * * *", func() error { //每10分钟运行以下函数
 		Dhq <- func() {
-			Change_old()
+		/*	Change_old()
 			New_list()
 			Hot_news()
 			Day30()
@@ -61,7 +61,7 @@ func crontab() {
 			Wx()
 			Web()
 			App()
-			SelectLists()
+			SelectLists()*/
 			Mediabank()
 		}
 		return nil
