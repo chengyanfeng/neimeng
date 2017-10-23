@@ -49,7 +49,7 @@ func main() {
 }
 
 func crontab() {
-	toolbox.AddTask("pd", toolbox.NewTask("pd", "* */10 * * *", func() error { //每10分钟运行以下函数
+	toolbox.AddTask("pd", toolbox.NewTask("pd", "0 */1 * * * *", func() error { //每10分钟运行以下函数
 		Dhq <- func() {
 		/*	Change_old()
 			New_list()

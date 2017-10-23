@@ -2,9 +2,9 @@ package controller
 
 import (
 	"github.com/astaxie/beego"
-	. "../datasource"
-	. "../def"
-	. "../util"
+	. "neimeng/datasource"
+	. "neimeng/def"
+	. "neimeng/util"
 	"time"
 	"strings"
 	"fmt"
@@ -761,19 +761,27 @@ func change_old_4() {
 	}
 }
 
-
+//获取媒体资源库
 func Mediabank(){
 	Debug("媒体资源库")
-
 	//优先修改备份字段
 	priority:=P{"backups":0}//优先字段
 	duplicate:=P{"backups":1}//备份字段
-	//先删除备份数据
-	D(Media).Remove(duplicate)
-
-	list:=*D(Media).Find(priority).All()
-	if len(list)>0{
-		for k,_:=range list {
+	prioritylist:=*D(Media).Find(priority).All()
+	fmt.Println("aaaa")
+	fmt.Println(len(prioritylist))
+	count:=D(Media).Find(duplicate).Count()
+	for i:=0;i<count;i++{
+		err:=D(Media).Remove(duplicate)
+		if err !=nil {
+			fmt.Println("没有备份数据")
+			Debug("没有备份数据")
+		}
+	}
+	if len(prioritylist)>0{
+		//先删除备份数据
+		for k,_:=range prioritylist {
+			//把优先数据修改为备份数据
 			fmt.Println(k)
 			D(Media).Upsert(priority,duplicate)
 		}
@@ -804,8 +812,10 @@ func Mediabank(){
 	param["extendResultFields"]="作者,产品状态"
 	data, error := HttpPostBody(url, &header, JsonEncode(param))
 	if error != nil {
+		fmt.Println("访问接口失败")
 		Debug("访问接口失败")
 	} else {
+		fmt.Println("访问接口成功")
 		Debug("访问接口成功")
 		md := *JsonDecode([]byte(data))
 
@@ -818,7 +828,7 @@ func Mediabank(){
 
 		for k,v :=range mddata {
 
-			 vdata:=v.(map[string]interface{})
+			vdata:=v.(map[string]interface{})
 			dataparam["创建时间"] =vdata["created"]
 			dataparam["提交时间"] =vdata["lastModify"]
 			dataparam["名称"] =vdata["creatorName"]
@@ -839,21 +849,20 @@ func Mediabank(){
 				}
 
 			}
-
-			fmt.Println("已经ok")
 			err:=D(Media).Add(dataparam)
 			if err!=nil{
 				D(Media).Remove(priority)
-				for k,_:=range list {
+				for k,_:=range priority {
 					//相同的循环方式把备份修改回来。
 					fmt.Println(k)
 					D(Media).Upsert(duplicate, priority)
 				}
 			}
-		}
 
 		}
-
 
 	}
+
+
+}
 
