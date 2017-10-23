@@ -363,10 +363,10 @@ func(this *WebController)Media_brank(){
 	fmt.Print("1221")
 	p:=P{"backups":0}
 
-	list:=*D(Media).Find(p).All()
+	list:=*D(Media).Find(p).Sort("序号").All()
 	if len(list)==0{
 		p:=P{"backups":1}
-		list:=*D(Media).Find(p).All()
+		list:=*D(Media).Find(p).Sort("序号").All()
 		this.EchoJsonMsg(list)
 	}else {
 	this.EchoJsonMsg(list)
