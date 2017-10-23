@@ -362,10 +362,17 @@ func (this *WebController) Task_status() {
 func(this *WebController)Media_brank(){
 	fmt.Print("1221")
 	p:=P{"backups":0}
+
 	list:=*D(Media).Find(p).All()
-	fmt.Print(list)
+	if len(list)==0{
+		p:=P{"backups":1}
+		list:=*D(Media).Find(p).All()
+		this.EchoJsonMsg(list)
+	}else {
 	this.EchoJsonMsg(list)
-}
+	}
+
+	}
 
 
 

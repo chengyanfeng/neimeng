@@ -862,9 +862,13 @@ func change_old_4() {
 
 func Mediabank(){
 	Debug("媒体资源库")
+
 	//优先修改备份字段
-	priority:=P{"backups":0}
-	duplicate:=P{"backups":1}
+	priority:=P{"backups":0}//优先字段
+	duplicate:=P{"backups":1}//备份字段
+	//先删除备份数据
+	D(Media).Remove(duplicate)
+
 	list:=*D(Media).Find(priority).All()
 	if len(list)>0{
 		for k,_:=range list {
@@ -938,8 +942,11 @@ func Mediabank(){
 			err:=D(Media).Add(dataparam)
 			if err!=nil{
 				D(Media).Remove(priority)
-				D(Media).Upsert(duplicate,priority)
-
+				for k,_:=range list {
+					//相同的循环方式把备份修改回来。
+					fmt.Println(k)
+					D(Media).Upsert(duplicate, priority)
+				}
 			}
 		}
 
