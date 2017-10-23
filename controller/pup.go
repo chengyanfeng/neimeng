@@ -2,9 +2,9 @@ package controller
 
 import (
 	"github.com/astaxie/beego"
-	. "neimeng/datasource"
-	. "neimeng/def"
-	. "neimeng/util"
+	. "../datasource"
+	. "../def"
+	. "../util"
 	"time"
 	"strings"
 	"fmt"
@@ -249,10 +249,9 @@ func SelectLists() {
 // 作品列表
 func Works() {
 	i := 1
-	url := []string{beego.AppConfig.String("works_total_day"), beego.AppConfig.String("works_total_week"), beego.AppConfig.String("works_total_month")}
-	//url := []string{"http://api.crt.hubpd.com/web_api/crt/screen/origin/count/yesterday",
-	//	"http://api.crt.hubpd.com/web_api/crt/screen/origin/count/week",
-	//	"http://api.crt.hubpd.com/web_api/crt/screen/origin/count/month"}
+	url := []string{"http://api.crt.test.hubpd.com/crt/screen/mediatype/origin/count/yesterday",
+		"http://api.crt.test.hubpd.com/crt/screen/mediatype/origin/count/week",
+		"http://api.crt.test.hubpd.com/crt/screen/mediatype/origin/count/month"}
 	for _, v := range url {
 		r := HttpGet(v)
 		jd := *JsonDecode([]byte(r))
@@ -288,10 +287,9 @@ func Works() {
 		i++
 	}
 	i = 1
-	url = []string{beego.AppConfig.String("works_reprinted_day"), beego.AppConfig.String("works_reprinted_week"), beego.AppConfig.String("works_reprinted_month")}
-	//url = []string{"http://api.crt.hubpd.com/web_api/crt/screen/reprinted/rank/yesterday",
-	//	"http://api.crt.hubpd.com/web_api/crt/screen/reprinted/rank/week",
-	//	"http://api.crt.hubpd.com/web_api/crt/screen/reprinted/rank/month"}
+	url = []string{"http://api.crt.test.hubpd.com/crt/screen/reprinted/rank/yesterday",
+		"http://api.crt.test.hubpd.com/crt/screen/reprinted/rank/week",
+		"http://api.crt.test.hubpd.com/crt/screen/reprinted/rank/month"}
 	for _, v := range url {
 		r := HttpGet(v)
 		jd := *JsonDecode([]byte(r))
@@ -333,61 +331,14 @@ func Works() {
 		i++
 	}
 
-	i = 1
-	url = []string{beego.AppConfig.String("works_comment_day"), beego.AppConfig.String("works_comment_week"), beego.AppConfig.String("works_comment_month")}
-	//url = []string{"http://api.crt.hubpd.com/web_api/crt/screen/comment/rank/yesterday",
-	//	"http://api.crt.hubpd.com/web_api/crt/screen/comment/rank/week",
-	//	"http://api.crt.hubpd.com/web_api/crt/screen/comment/rank/month"}
-	for _, v := range url {
-		r := HttpGet(v)
-		jd := *JsonDecode([]byte(r))
-		slice, ok := jd["data"].([]interface{})
-		if i == 1 {
-			Debug("当天作品评论列表接口")
-		} else if i == 2 {
-			Debug("本周作品评论列表接口")
-		} else {
-			Debug("本月作品评论列表接口")
-		}
-		if r == "" {
-			Debug("访问接口失败")
-		} else {
-			Debug("访问接口成功")
-		}
-		if len(slice) == 0 {
-			Debug("返回数据为空")
-		} else {
-			Debug("返回数据正常")
-		}
-		if ok {
-			for _, vv := range slice {
-				v := vv.(map[string]interface{})
-				p := P{}
-				p["news_class"] = 7
-				p["name"] = v["name"]
-				p["href"] = v["url"]
-				p["comment"] = ToInt(v["value"])
-				p["week"] = i
-				p["old"] = 0
-				p["tp"] = "1"
-				p["ct"] = Timestamp()
-				p["dh"] = 0
-				p["_id"] = NewId()
-				D(News).Add(p)
-			}
-		}
-		i++
-	}
-
 }
 
 // 作者列表
 func Author() {
 	i := 1
-	url := []string{beego.AppConfig.String("author_reprinted_day"), beego.AppConfig.String("author_reprinted_week"), beego.AppConfig.String("author_reprinted_month")}
-	//url := []string{"http://api.crt.hubpd.com/web_api/crt/screen/author/reprinted/rank/yesterday",
-	//	"http://api.crt.hubpd.com/web_api/crt/screen/author/reprinted/rank/week",
-	//	"http://api.crt.hubpd.com/web_api/crt/screen/author/reprinted/rank/month"}
+	url := []string{"http://api.crt.test.hubpd.com/crt/screen/author/reprinted/rank/yesterday",
+		"http://api.crt.test.hubpd.com/crt/screen/author/reprinted/rank/week",
+		"http://api.crt.test.hubpd.com/crt/screen/author/reprinted/rank/month"}
 	for _, v := range url {
 		r := HttpGet(v)
 		jd := *JsonDecode([]byte(r))
@@ -428,60 +379,13 @@ func Author() {
 		}
 		i++
 	}
-
-	i = 1
-	url = []string{beego.AppConfig.String("author_comment_day"), beego.AppConfig.String("author_comment_week"), beego.AppConfig.String("author_comment_month")}
-	//url = []string{"http://api.crt.hubpd.com/web_api/crt/screen/author/comment/rank/yesterday",
-	//	"http://api.crt.hubpd.com/web_api/crt/screen/author/comment/rank/week",
-	//	"http://api.crt.hubpd.com/web_api/crt/screen/author/comment/rank/month"}
-	for _, v := range url {
-		r := HttpGet(v)
-		jd := *JsonDecode([]byte(r))
-		slice, ok := jd["data"].([]interface{})
-		if i == 1 {
-			Debug("当天作者评论列表接口")
-		} else if i == 2 {
-			Debug("本周作者评论列表接口")
-		} else {
-			Debug("本月作者评论列表接口")
-		}
-		if r == "" {
-			Debug("访问接口失败")
-		} else {
-			Debug("访问接口成功")
-		}
-		if len(slice) == 0 {
-			Debug("返回数据为空")
-		} else {
-			Debug("返回数据正常")
-		}
-		if ok {
-			for _, vv := range slice {
-				v := vv.(map[string]interface{})
-				p := P{}
-				p["news_class"] = 8
-				p["name"] = v["name"]
-				p["comment"] = ToInt(v["value"])
-				p["periodical"] = v["adminName"]
-				p["week"] = i
-				p["old"] = 0
-				p["tp"] = "1"
-				p["ct"] = Timestamp()
-				p["dh"] = 0
-				p["_id"] = NewId()
-				D(News).Add(p)
-			}
-		}
-		i++
-	}
 }
 
 // 30天
 func Day30() {
 	Debug("文章30天")
 	var array []interface{}
-	r := HttpGet(beego.AppConfig.String("day30"))
-	//r := HttpGet("http://api.crt.hubpd.com/web_api/crt/screen/origin/count/d30")
+	r := HttpGet("http://api.crt.test.hubpd.com/crt/screen/origin/count/d30")
 	jd := *JsonDecode([]byte(r))
 	slices, err := jd["data"].([]interface{})
 	if r == "" {
@@ -572,14 +476,12 @@ func App() {
 	Debug("客户端")
 	num := []int{1, 2, 3}
 	for _, v := range num {
-		//new_list := "http://10.101.67.1:8000/uar/api/getclientdata"
-		//new_list := "http://10.101.67.1:8000/uar/api/getclientdata"
+		new_list := "http://uar.hubpd.com/uar/mongoscreen/getClientHotArticle"
 		header := P{}
 		header["Content-Type"] = "application/json; charset=utf-8"
 		param := P{}
 		param["week"] = v
-		r, error := HttpPostBody(beego.AppConfig.String("app"), &header, JsonEncode(param))
-		//r, error := HttpPostBody(new_list, &header, JsonEncode(param))
+		r, error := HttpPostBody(new_list, &header, JsonEncode(param))
 		jd := *JsonDecode([]byte(r))
 		slices, err := jd["data"].(map[string]interface{})
 		if error != nil {
@@ -949,18 +851,6 @@ func Mediabank(){
 				}
 			}
 		}
-
-
-
-
-
-
-
-
-
-
-
-
 
 		}
 

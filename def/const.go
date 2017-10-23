@@ -11,6 +11,7 @@ const (
 	News string = "news"
 	Total string = "total"
 	Cat string = "cat"
+	Media string = "media"
 )
 
 const (

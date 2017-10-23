@@ -2,9 +2,9 @@ package controller
 
 import (
 	"github.com/astaxie/beego/toolbox"
-	. "neimeng/datasource"
-	. "neimeng/def"
-	. "neimeng/util"
+	. "../datasource"
+	. "../def"
+	. "../util"
 	"sort"
 	"strings"
 	"time"
