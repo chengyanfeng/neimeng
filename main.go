@@ -4,10 +4,10 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/toolbox"
 	"os"
-	. "neimeng/controller"
-	. "neimeng/def"
-	. "neimeng/task"
-	. "neimeng/util"
+	. "./controller"
+	. "./def"
+	. "./task"
+	. "./util"
 )
 
 func main() {
