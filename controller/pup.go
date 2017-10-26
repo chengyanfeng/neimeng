@@ -424,14 +424,17 @@ func Twitter() {
 	Debug("微博")
 	num := []int{1, 2, 3}
 	for _, v := range num {
-		//new_list := "http://10.101.67.1:8000/uar/api/getwbdata"
-		//new_list := "http://10.101.67.1:8000/uar/api/getwbdata"
+		new_list := "http://mapp.uar.hubpd.com:9090/r/uar/mongoscreen/getWbHotArticle"
 		header := P{}
 		header["Content-Type"] = "application/json; charset=utf-8"
 		param := P{}
+		param["orgId"] = "5d045846925f4d6ea7dec6875c6f96b8"
 		param["week"] = v
-		r, error := HttpPostBody(beego.AppConfig.String("twitter"), &header, JsonEncode(param))
-		//r, error := HttpPostBody(new_list, &header, JsonEncode(param))
+		param["clientCode"] = "neimengguribao"
+		timestamp := ToString(Timestamp())
+		param["timesMillis"] = timestamp
+		param["secretCode"] = Md5("neimengguribao","tDAhh2esP25ck8QQ",timestamp)
+		r, error := HttpPostBody(new_list, &header, JsonEncode(param))
 		jd := *JsonDecode([]byte(r))
 		slices, err := jd["data"].(map[string]interface{})
 		if error != nil {
@@ -476,11 +479,16 @@ func App() {
 	Debug("客户端")
 	num := []int{1, 2, 3}
 	for _, v := range num {
-		new_list := "http://uar.hubpd.com/uar/mongoscreen/getClientHotArticle"
+		new_list := "http://mapp.uar.hubpd.com:9090/r/uar/mongoscreen/getClientHotArticle"
 		header := P{}
 		header["Content-Type"] = "application/json; charset=utf-8"
 		param := P{}
+		param["orgId"] = "5d045846925f4d6ea7dec6875c6f96b8"
 		param["week"] = v
+		param["clientCode"] = "neimengguribao"
+		timestamp := ToString(Timestamp())
+		param["timesMillis"] = timestamp
+		param["secretCode"] = Md5("neimengguribao","tDAhh2esP25ck8QQ",timestamp)
 		r, error := HttpPostBody(new_list, &header, JsonEncode(param))
 		jd := *JsonDecode([]byte(r))
 		slices, err := jd["data"].(map[string]interface{})
@@ -524,13 +532,16 @@ func Wx() {
 	Debug("微信")
 	num := []int{1, 2, 3}
 	for _, v := range num {
-		new_list := "http://10.101.67.1:8000/uar/api/getwcdata"
-		//new_list := "http://10.101.67.1:8000/uar/api/getwcdata"
+		new_list := "http://mapp.uar.hubpd.com:9090/r/uar/mongoscreen/getWcHotArticle"
 		header := P{}
 		header["Content-Type"] = "application/json; charset=utf-8"
 		param := P{}
+		param["orgId"] = "5d045846925f4d6ea7dec6875c6f96b8"
 		param["week"] = v
-		//r, error := HttpPostBody(beego.AppConfig.String("wx"), &header, JsonEncode(param))
+		param["clientCode"] = "neimengguribao"
+		timestamp := ToString(Timestamp())
+		param["timesMillis"] = timestamp
+		param["secretCode"] = Md5("neimengguribao","tDAhh2esP25ck8QQ",timestamp)
 		r, error := HttpPostBody(new_list, &header, JsonEncode(param))
 		jd := *JsonDecode([]byte(r))
 		slices, err := jd["data"].(map[string]interface{})
@@ -574,13 +585,17 @@ func Web() {
 	Debug("网站")
 	num := []int{1, 2, 3}
 	for _, v := range num {
-		//new_list := "http://10.101.67.1:8000/uar/api/getwebdata"
+		new_list := "http://mapp.uar.hubpd.com:9090/r/uar/mongoscreen/getWebHotArticle"
 		header := P{}
 		header["Content-Type"] = "application/json; charset=utf-8"
 		param := P{}
+		param["orgId"] = "5d045846925f4d6ea7dec6875c6f96b8"
 		param["week"] = v
-		r, error := HttpPostBody(beego.AppConfig.String("web"), &header, JsonEncode(param))
-		//r, error := HttpPostBody(new_list, &header, JsonEncode(param))
+		param["clientCode"] = "neimengguribao"
+		timestamp := ToString(Timestamp())
+		param["timesMillis"] = timestamp
+		param["secretCode"] = Md5("neimengguribao","tDAhh2esP25ck8QQ",timestamp)
+		r, error := HttpPostBody(new_list, &header, JsonEncode(param))
 		jd := *JsonDecode([]byte(r))
 		slices, err := jd["data"].(map[string]interface{})
 		if error != nil {
