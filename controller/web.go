@@ -375,5 +375,19 @@ func(this *WebController)Media_brank(){
 	}
 
 
+func(this *WebController)First_line(){
+	fmt.Print("1221")
+	tp := this.GetString("type")
+	p:=P{"backups":0,"type":tp}
 
+	list:=*D(Firstline).Find(p).Sort("序号").All()
+	if len(list)==0{
+		p:=P{"backups":1,"type":tp}
+		list:=*D(Firstline).Find(p).Sort("序号").All()
+		this.EchoJsonMsg(list)
+	}else {
+		this.EchoJsonMsg(list)
+	}
+
+}
 
