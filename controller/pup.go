@@ -9,6 +9,7 @@ import (
 	"strings"
 	"fmt"
 
+
 )
 
 type PupController struct {
@@ -778,6 +779,7 @@ func change_old_4() {
 
 //获取媒体资源库
 func Mediabank(){
+
 	Debug("媒体资源库")
 	//优先修改备份字段
 	priority:=P{"backups":0}//优先字段
@@ -825,6 +827,7 @@ func Mediabank(){
 	param["token"]="ST-53-R4FZlngYZ2eAzdofZd7J-cas"
 	param["orderBy"]="lastModify desc"
 	param["extendResultFields"]="作者,产品状态"
+
 	data, error := HttpPostBody(url, &header, JsonEncode(param))
 	if error != nil {
 		fmt.Println("访问接口失败")
@@ -844,6 +847,7 @@ func Mediabank(){
 		for k,v :=range mddata {
 
 			vdata:=v.(map[string]interface{})
+			dataparam["time"]=time.Now().String()
 			dataparam["创建时间"] =vdata["created"]
 			dataparam["提交时间"] =vdata["lastModify"]
 			dataparam["名称"] =vdata["creatorName"]
@@ -881,3 +885,196 @@ func Mediabank(){
 
 }
 
+
+
+//获取百度地图信息
+func Mapbaidu(){
+	Debug("百度地图")
+	//优先修改备份字段
+	/*priority:=P{"backups":0}//优先字段
+	duplicate:=P{"backups":1}//备份字段
+	prioritylist:=*D(Media).Find(priority).All()
+	fmt.Println("aaaa")
+	fmt.Println(len(prioritylist))
+	count:=D(Media).Find(duplicate).Count()
+	for i:=0;i<count;i++{
+		err:=D(Media).Remove(duplicate)
+		if err !=nil {
+			fmt.Println("没有备份数据")
+			Debug("没有备份数据")
+		}
+	}
+	if len(prioritylist)>0{
+		//先删除备份数据
+		for k,_:=range prioritylist {
+			//把优先数据修改为备份数据
+			fmt.Println(k)
+			D(Media).Upsert(priority,duplicate)
+		}
+	}*/
+	var url="http://inteam.dev.hubpd.com/pdmi/transferToken"
+	header := P{}
+	header["Content-Type"] = "application/json;charset=UTF-8"
+	header["Access-Control-Allow-Headers"]="Content-Type"
+	header["Access-Control-Allow-Credentials"]="true"
+
+	dataparam:=P{}
+	param := P{}
+	param["access_token"]=""
+	param["expiration"]=ToString(strings.Split(time.Now().String(),".")[0])
+	param["expires_in"]=3599
+	param["client_id"]="e39ad6b0-c4ad-11e5-805e-854d1b845f06"
+	data, error := HttpPostBody(url, &header, JsonEncode(param))
+	fmt.Println(data)
+	if error != nil {
+		fmt.Println("访问接口失败")
+		Debug("访问接口失败")
+	} else {
+		fmt.Println("访问接口成功")
+		Debug("访问接口成功")
+		md := *JsonDecode([]byte(data))
+		mddata, err :=md["itemList"].([]interface{})
+		if err{
+			fmt.Print("获取成功")
+		}
+		totalCount:=md["totalCount"]
+		dataparam["totalCount"]=totalCount
+		for k,v :=range mddata {
+			vdata:=v.(map[string]interface{})
+			dataparam["time"]=time.Now().String()
+			dataparam["创建时间"] =vdata["created"]
+			dataparam["提交时间"] =vdata["lastModify"]
+			dataparam["名称"] =vdata["creatorName"]
+			dataparam["资源详情"] =vdata["detailUrl"]
+			dataparam["序号"]=k
+			dataparam["backups"]=0
+			auth:=vdata["extendAttributes"].([]interface{})
+			for k,authv:=range auth{
+
+				audata:=authv.(map[string]interface{})
+				if k==0{
+					dataparam["作者"]=audata["id"]
+
+
+				}else {
+					dataparam["状态"]=audata["value"]
+
+				}
+
+			}
+			/*err:=D(Media).Add(dataparam)*/
+			/*if err!=nil{
+				D(Media).Remove(priority)
+				for k,_:=range priority {
+					//相同的循环方式把备份修改回来。
+					fmt.Println(k)
+					D(Media).Upsert(duplicate, priority)
+				}
+			}*/
+
+		}
+
+	}
+
+
+}
+
+//第一线索
+func Line(){
+
+	Debug("第一线索")
+	//优先修改备份字段
+	priority:=P{"backups":0}//优先字段
+	duplicate:=P{"backups":1}//备份字段
+	prioritylist:=*D(Firstline).Find(priority).All()
+	fmt.Println("aaaa")
+	fmt.Println(len(prioritylist))
+	count:=D(Firstline).Find(duplicate).Count()
+	for i:=0;i<count;i++{
+		err:=D(Firstline).Remove(duplicate)
+		if err !=nil {
+			fmt.Println("没有备份数据")
+			Debug("没有备份数据")
+		}
+	}
+	if len(prioritylist)>0{
+		//先删除备份数据
+		for k,_:=range prioritylist {
+			//把优先数据修改为备份数据
+			fmt.Println(k)
+			D(Firstline).Upsert(priority,duplicate)
+		}
+	}
+	var url="http://zycf.northnews.cn:8443/ClueWeb/api/clue/resources"
+	header := P{}
+	header["Content-Type"] = "application/json;charset=UTF-8"
+	header["Access-Control-Allow-Headers"]="Content-Type"
+	header["Access-Control-Allow-Credentials"]="true"
+	dataparam:=P{}
+	param := P{}
+	param["sortColumn"]="createTime"
+	param["start"]=0
+	param["limit"]=3
+	for i:=0;i<2;i++{
+		if i==0{
+			param["classId"]=1024
+		}else {
+			param["classId"]=65536
+		}
+	fmt.Println("i:")
+	fmt.Print(i)
+	data, error := HttpPostBody(url, &header, JsonEncode(param))
+	fmt.Println(data)
+	if error != nil {
+		fmt.Println("访问接口失败")
+		Debug("访问接口失败")
+	} else {
+		fmt.Println("访问接口成功")
+		Debug("访问接口成功")
+		md := *JsonDecode([]byte(data))
+
+		mddata, err :=md["resources"].([]interface{})
+		if err{
+			fmt.Print("获取成功")
+		}
+		fmt.Println(mddata)
+		for k,v :=range mddata {
+			vdata:=v.(map[string]interface{})
+			dataparam["time"]=time.Now().String()
+			dataparam["resourceGuid"] =vdata["resourceGuid"]
+			dataparam["title"] =vdata["title"]
+			dataparam["publishTime"] =vdata["publishTime"]
+			dataparam["createTime"] =vdata["createTime"]
+			dataparam["classId"]=vdata["classId"]
+			dataparam["sourceAddr"]=vdata["sourceAddr"]
+			dataparam["resourceDisplayType"]=vdata["resourceDisplayType"]
+			dataparam["selectedTopic"]=vdata["selectedTopic"]
+			dataparam["resourceStatus"]=vdata["resourceStatus"]
+			dataparam["submitUserId"]=vdata["submitUserId"]
+			dataparam["submitUserName"]=vdata["submitUserName"]
+			dataparam["departmentId"]=vdata["departmentId"]
+			if i==0{
+				dataparam["type"]="1024"
+			}else {
+				dataparam["type"]="65536"
+			}
+			dataparam["backups"]=0
+			dataparam["departmentName"]=vdata["departmentName"]
+			dataparam["序号"]=k
+			err:=D(Firstline).Add(dataparam)
+			if err!=nil{
+				D(Firstline).Remove(priority)
+				for k,_:=range priority {
+					//相同的循环方式把备份修改回来。
+					fmt.Println(k)
+					D(Firstline).Upsert(duplicate, priority)
+				}
+			}
+
+		}
+
+	}}
+
+
+
+}
